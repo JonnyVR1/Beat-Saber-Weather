@@ -1,0 +1,49 @@
+{
+  "id": "Weather",
+  "name": "Weather GAMEPLAY TRAILER",
+  "version": "0.1.2",
+  "author": "Futuremappermydud",
+  "description": [],
+  "category": "Gameplay",
+  "gameVersion": "1.13.2",
+  "platform": "Quest",
+  "components": [
+    {
+      "type": "HookMod",
+      "installAction": {
+        "installLibraryFile": "libweather.so"
+      },
+      "uninstallAction": {
+        "removeLibraryFile": "libweather.so"
+      }
+    },
+    {
+      "type": "HookModLibrary",
+      "installAction": {
+        "installLibraryFile": "libbeatsaber-hook_1_0_10.so"
+      }
+    },
+    {
+      "type": "HookModLibrary",
+      "installAction": {
+        "installLibraryFile": "libcustom-types.so"
+      }
+    },
+    {
+      "type": "HookModLibrary",
+      "installAction": {
+        "installLibraryFile": "libbs-utils.so"
+      }
+    },
+    {
+      "type": "FileCopyMod",
+      "sourceFileName": "Snow.qeffect",
+      "targetRootedPathAndFileName": "/sdcard/ModData/com.beatgames.beatsaber/Mods/Weather/Effects/Snow.qeffect"
+    },
+    {
+      "type": "FileCopyMod",
+      "sourceFileName": "Weather.json",
+      "targetRootedPathAndFileName": "/sdcard/ModData/com.beatgames.beatsaber/Configs/Weather.json"
+    }
+  ]
+}

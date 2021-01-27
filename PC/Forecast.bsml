@@ -1,0 +1,16 @@
+﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+    <tab-selector tab-tag='SettingsTab'></tab-selector>
+    <macro.if value='showWeatherInfoMenu'>
+      <tab tags='SettingsTab' tab-name='Forecast'>
+        <vertical id='Forecast' Align='Top'>
+        </vertical>
+      </tab>
+    </macro.if>
+    <tab tags='SettingsTab' tab-name='Effects' Align='Top'>
+      <vertical pad-top='12' spacing='1'>
+        <page-button event-click='effectList#PageUp' direction='Up' />
+        <list id='effectList' expand-cell='true' select-cell='effectSelect' />
+        <page-button event-click='effectList#PageDown' direction='Down' />
+      </vertical>
+    </tab>
+</bg>
