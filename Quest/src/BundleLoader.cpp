@@ -23,6 +23,28 @@ Weather::WeatherSceneInfo* Weather::BundleLoader::SceneInfoRef;
 std::vector<Weather::Effect*> Weather::BundleLoader::effects; 
 std::vector<Weather::BundleWrapper*> Weather::BundleLoader::bundles; 
 
+Weather::BundleWrapper* lastWrapper = nullptr;
+Array<Il2CppString*>* paths;
+int i = 0;
+void BundleThread()
+{
+    if(lastWrapper != nullptr)
+    {
+        while(!lastWrapper->loaded)
+        {
+            usleep(1000);
+        } 
+    }
+    Il2CppString* path = reinterpret_cast<Il2CppString*>(paths->values[i]);
+    Weather::GenericLogger::Log("Bundle Index: " + std::to_string(i));
+            
+    Weather::BundleWrapper* wrapper = new Weather::BundleWrapper();
+    lastWrapper = wrapper;
+    wrapper->Load(path);
+    Weather::BundleLoader::bundles.emplace_back(wrapper);
+    i++;
+}
+
 void Weather::BundleLoader::Load()
 {
     Weather::GenericLogger::Log("BundleLoader::Load");
@@ -45,33 +67,11 @@ void Weather::BundleLoader::Load()
         Directory::CreateDirectory(searchPath);
     }
 
-    Array<Il2CppString*>* paths = Directory::GetFiles(searchPath, search);
+    paths = Directory::GetFiles(searchPath, search);
     Weather::GenericLogger::Log("Bundle Paths: " + std::to_string(paths->Length()));
-    BundleWrapper* lastWrapper = nullptr;
-    int i = 0;
-    std::thread assetLoad([&lastWrapper, paths, &i]{
-        if(lastWrapper != nullptr)
-        {
-           while(!lastWrapper->loaded)
-            {
-                usleep(1000);
-            } 
-        }
-        Il2CppString* path = reinterpret_cast<Il2CppString*>(paths->values[i]);
-        Weather::GenericLogger::Log("Bundle Index: " + std::to_string(i));
-            
-        Weather::BundleWrapper* wrapper = new Weather::BundleWrapper();
-        lastWrapper = wrapper;
-        wrapper->Load(path);
-        bundles.emplace_back(wrapper);
-        i++;
-    });
+    std::thread assetLoad(BundleThread);
 
     assetLoad.detach();
-    for(int i, v; i < paths->Length(); i++)
-    {
-        
-    }
 } 
 
 void Weather::BundleLoader::LoadAssets()

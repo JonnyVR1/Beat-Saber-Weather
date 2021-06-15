@@ -20,13 +20,7 @@
     {
       "type": "HookModLibrary",
       "installAction": {
-        "installLibraryFile": "libbeatsaber-hook_1_0_10.so"
-      }
-    },
-    {
-      "type": "HookModLibrary",
-      "installAction": {
-        "installLibraryFile": "libcustom-types.so"
+        "installLibraryFile": "libbeatsaber-hook_1_0_12.so"
       }
     },
     {
@@ -34,16 +28,6 @@
       "installAction": {
         "installLibraryFile": "libbs-utils.so"
       }
-    },
-    {
-      "type": "FileCopyMod",
-      "sourceFileName": "Snow.qeffect",
-      "targetRootedPathAndFileName": "/sdcard/ModData/com.beatgames.beatsaber/Mods/Weather/Effects/Snow.qeffect"
-    },
-    {
-      "type": "FileCopyMod",
-      "sourceFileName": "Weather.json",
-      "targetRootedPathAndFileName": "/sdcard/ModData/com.beatgames.beatsaber/Configs/Weather.json"
     }
   ]
 }

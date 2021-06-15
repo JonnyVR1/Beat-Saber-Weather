@@ -1,30 +1,26 @@
 ﻿using BeatSaberMarkupLanguage;
 using HMUI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 
 namespace Weather
 {
 	internal class ForecastFlowCoordinator : FlowCoordinator
 	{
-		internal Forecast _forecastViewController;
-		internal EffectSettings _effectViewController;
+		private Forecast forecastViewController;
+		internal EffectSettings EffectViewController;
 
 		protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 		{
-			_forecastViewController = BeatSaberUI.CreateViewController<Forecast>();
-			_effectViewController = BeatSaberUI.CreateViewController<EffectSettings>();
+			forecastViewController = BeatSaberUI.CreateViewController<Forecast>();
+			EffectViewController = BeatSaberUI.CreateViewController<EffectSettings>();
 			try
 			{
 				if (firstActivation)
 				{
 					SetTitle("Forecast");
 					showBackButton = true;
-					_forecastViewController.flow = this;
-					ProvideInitialViewControllers(_forecastViewController);
+					forecastViewController.flow = this;
+					ProvideInitialViewControllers(forecastViewController);
 				}
 			}
 			catch (Exception ex)
@@ -41,7 +37,7 @@ namespace Weather
 
 		public void ShowEffectSettings()
 		{
-			SetRightScreenViewController(_effectViewController, ViewController.AnimationType.In);
+			SetRightScreenViewController(EffectViewController, ViewController.AnimationType.In);
 		}
 	}
 }

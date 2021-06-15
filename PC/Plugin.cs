@@ -11,79 +11,75 @@ using IPALogger = IPA.Logging.Logger;
 namespace Weather
 {
     [Plugin(RuntimeOptions.DynamicInit)]
-    public class Plugin
+    // ReSharper disable once ClassNeverInstantiated.Global
+    internal class Plugin
     {
-        private static bool hasEmptyTransitioned;
+        private static bool _hasEmptyTransitioned;
 
-        internal static Plugin Instance { get; private set; }
         internal static IPALogger Log { get; private set; }
-        internal static ForecastFlowCoordinator _forecastFlowCoordinator { get; private set; }
-        internal static string menu = "MenuViewControllers";
-        internal static string game = "GameCore";
+        private static ForecastFlowCoordinator ForecastFlowCoordinator { get; set; }
+        internal const string Menu = "MenuViewControllers";
+        internal const string Game = "GameCore";
+
         [Init]
         public Plugin(IPALogger logger, IPA.Config.Config config)
         {
+
             Log = logger;
             Log.Info("Initializing");
             SceneManager.activeSceneChanged += SceneChanged;
             PluginConfig.Instance = config.Generated<PluginConfig>();
-            Instance = this;
-            MenuButtons.instance.RegisterButton(new MenuButton("Forecast", "See your Weather", new System.Action(LoadForCastUI)));
-            PluginConfig.Instance.audioSFXVolume = Mathf.Clamp(PluginConfig.Instance.audioSFXVolume, 0f, 1f);
+            MenuButtons.instance.RegisterButton(new MenuButton("Forecast", "See your Weather", LoadForCastUI));
+            PluginConfig.Instance.AudioSfxVolume = Mathf.Clamp(PluginConfig.Instance.AudioSfxVolume, 0f, 1f);
             MiscConfig.Read();
             var harmony = new Harmony("com.FutureMapper.Weather");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
-        void SceneChanged(Scene scene, Scene arg2)
+        private void SceneChanged(Scene scene, Scene arg2)
         {
             Log.Info(scene.name + " " + arg2.name);
-            if (arg2.name == "HealthWarning" && !hasEmptyTransitioned)
+            if (arg2.name == "HealthWarning" && !_hasEmptyTransitioned)
             {
-                hasEmptyTransitioned = true;
+                _hasEmptyTransitioned = true;
                 BundleLoader.Load();
             }
-            if (!hasEmptyTransitioned && arg2.name == "EmptyTransition")
+            if (!_hasEmptyTransitioned && arg2.name == "EmptyTransition")
             {
-                hasEmptyTransitioned = true;
+                _hasEmptyTransitioned = true;
                 BundleLoader.Load();
             }
-            if (arg2.name == menu)
+            if (arg2.name == Menu)
             {
-                Log.Debug(menu);
+                Log.Debug(Menu);
                 MenuSceneActive();
             }
-            if (arg2.name == game)
+            if (arg2.name == Game)
             {
                 GameSceneActive();
             }
         }
 
-        void MenuSceneActive()
+        private void MenuSceneActive()
         {
-            if(PluginConfig.Instance.WeatherFinder.enabled)
-                BundleLoader.LoadWeatherFinder();
-
-            WeatherSceneInfo.CurrentScene = SceneManager.GetSceneByName(menu);
-            BundleLoader.WeatherPrefab.GetComponent<WeatherSceneInfo>().SetActiveRefs();
-        }
-        void GameSceneActive()
-        {
-            if (PluginConfig.Instance.WeatherFinder.enabled)
-                BundleLoader.LoadWeatherFinder();
-
-            WeatherSceneInfo.CurrentScene = SceneManager.GetSceneByName(game);
+            WeatherSceneInfo.CurrentScene = SceneManager.GetSceneByName(Menu);
             BundleLoader.WeatherPrefab.GetComponent<WeatherSceneInfo>().SetActiveRefs();
         }
 
-        void LoadForCastUI()
+        private void GameSceneActive()
         {
-            if (_forecastFlowCoordinator == null)
+            WeatherSceneInfo.CurrentScene = SceneManager.GetSceneByName(Game);
+            BundleLoader.WeatherPrefab.GetComponent<WeatherSceneInfo>().SetActiveRefs();
+        }
+
+        private void LoadForCastUI()
+        {
+            if (ForecastFlowCoordinator == null)
             {
-                _forecastFlowCoordinator = BeatSaberUI.CreateFlowCoordinator<ForecastFlowCoordinator>();
+                ForecastFlowCoordinator = BeatSaberUI.CreateFlowCoordinator<ForecastFlowCoordinator>();
             }
 
-            BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(_forecastFlowCoordinator);
+            BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(ForecastFlowCoordinator);
         }
     }
 }

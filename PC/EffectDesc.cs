@@ -1,40 +1,45 @@
 ﻿using UnityEngine;
-public class EffectDiscriptor : MonoBehaviour
-{
-    [SerializeField] public string Author = "MyName";
-    [SerializeField] public string EffectName = "MyEffect";
-    [SerializeField] public bool WorksInMenu = true;
-    [SerializeField] public bool WorksInGame = true;
-    [SerializeField] public Sprite coverImage = null;
-}   
+using UnityEngine.Serialization;
 
-public class TempDesc_0_1_1
+namespace Weather
 {
-    public string Author = "MyName";
-    public string EffectName = "MyEffect";
-    public bool WorksInMenu = true;
-
-    public TempDesc_0_1_1(string _Author, string _EffectName, bool _WorksInMenu)
+    public class EffectDescriptor : MonoBehaviour
     {
-        Author = _Author;
-        EffectName = _EffectName;
-        WorksInMenu = _WorksInMenu;
+        [FormerlySerializedAs("Author")] [SerializeField] public string author = "MyName";
+        [FormerlySerializedAs("EffectName")] [SerializeField] public string effectName = "MyEffect";
+        [FormerlySerializedAs("WorksInMenu")] [SerializeField] public bool worksInMenu = true;
+        [FormerlySerializedAs("WorksInGame")] [SerializeField] public bool worksInGame = true;
+        [SerializeField] public Sprite coverImage;
+    }   
+
+    public abstract class TempDesc011
+    {
+        public readonly string Author;
+        public readonly string EffectName;
+        public readonly bool WorksInMenu;
+
+        protected TempDesc011(string author, string effectName, bool worksInMenu)
+        {
+            Author = author;
+            EffectName = effectName;
+            WorksInMenu = worksInMenu;
+        }
     }
-}
 
-public class TempDesc_0_1_2
-{
-    public string Author = "MyName";
-    public string EffectName = "MyEffect";
-    public bool WorksInMenu = true;
-    public bool WorksInGame = true;
-    public Texture2D coverImage = null;
-
-    public TempDesc_0_1_2(string _Author, string _EffectName, bool _WorksInMenu, bool _WorksInGame)
+    public class TempDesc012
     {
-        Author = _Author;
-        EffectName = _EffectName;
-        WorksInMenu = _WorksInMenu;
-        WorksInGame = _WorksInGame;
+        public readonly string Author;
+        public readonly string EffectName;
+        public readonly bool WorksInMenu;
+        public readonly bool WorksInGame;
+        public Texture2D CoverImage = null;
+
+        public TempDesc012(string author, string effectName, bool worksInMenu, bool worksInGame)
+        {
+            Author = author;
+            EffectName = effectName;
+            WorksInMenu = worksInMenu;
+            WorksInGame = worksInGame;
+        }
     }
 }

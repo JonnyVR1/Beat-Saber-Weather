@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using BeatSaberMarkupLanguage;
-using BeatSaberMarkupLanguage.Attributes;
-using BeatSaberMarkupLanguage.Components;
+﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.ViewControllers;
 using TMPro;
 using UnityEngine;
@@ -19,42 +13,42 @@ namespace Weather
         public override string ResourceName => string.Join(".", GetType().Namespace, GetType().Name);
 
         [UIComponent("effectName")]
-        private TextMeshProUGUI text = null;
+        private readonly TextMeshProUGUI text = null;
 
         [UIObject("Enabled")]
-        private GameObject enabledToggle = null;
+        private readonly GameObject enabledToggle = null;
         [UIObject("ShowMenu")]
-        private GameObject menuToggle = null;
+        private readonly GameObject menuToggle = null;
         [UIObject("ShowGame")]
-        private GameObject gameToggle = null;
+        private readonly GameObject gameToggle = null;
 
-        private Effect currectEff = null;
+        private Effect currentEffect;
 
         private void EnabledToggleClicked(bool value)
         {
-            EffectModel.EnableEffect(currectEff.Desc.EffectName, enabledToggle.GetComponentInChildren<Toggle>().isOn);
-            if (value) currectEff.SetSceneMaterials();
-            if (!value) currectEff.RemoveSceneMaterials();
+            EffectModel.EnableEffect(currentEffect.Desc.effectName, enabledToggle.GetComponentInChildren<Toggle>().isOn);
+            if (value) currentEffect.SetSceneMaterials();
+            if (!value) currentEffect.RemoveSceneMaterials();
         }
         private void GameToggleClicked(bool value)
         {
             Plugin.Log.Info("GameToggleClicked");
-            currectEff.showInGame = value;
-            currectEff.SetActiveRefs();
-            MiscConfigObject configObject = MiscConfig.ReadObject(EffectModel.GetNameWithoutSceneName(currectEff.Desc.EffectName));
-            configObject.showInGame = value;
+            currentEffect.ShowInGame = value;
+            currentEffect.SetActiveRefs();
+            var configObject = MiscConfig.ReadObject(EffectModel.GetNameWithoutSceneName(currentEffect.Desc.effectName));
+            configObject.ShowInGame = value;
             MiscConfig.WriteToObject(configObject);
         }
         private void MenuToggleClicked(bool value)
         {
             Plugin.Log.Info("MenuToggleClicked");
-            currectEff.showInMenu = value;
-            currectEff.SetActiveRefs();
-            MiscConfigObject configObject = MiscConfig.ReadObject(EffectModel.GetNameWithoutSceneName(currectEff.Desc.EffectName));
-            configObject.showInMenu = value;
+            currentEffect.ShowInMenu = value;
+            currentEffect.SetActiveRefs();
+            var configObject = MiscConfig.ReadObject(EffectModel.GetNameWithoutSceneName(currentEffect.Desc.effectName));
+            configObject.ShowInMenu = value;
             MiscConfig.WriteToObject(configObject);
-            if (value) currectEff.SetSceneMaterials();
-            if (!value) currectEff.RemoveSceneMaterials();
+            if (value) currentEffect.SetSceneMaterials();
+            if (!value) currentEffect.RemoveSceneMaterials();
         }
 
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
@@ -62,9 +56,9 @@ namespace Weather
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
             if(firstActivation)
             {
-                UnityAction<bool> enabledOnClicked = new UnityAction<bool>(EnabledToggleClicked);
-                UnityAction<bool> gameOnClicked = new UnityAction<bool>(GameToggleClicked);
-                UnityAction<bool> menuOnClicked = new UnityAction<bool>(MenuToggleClicked);
+                var enabledOnClicked = new UnityAction<bool>(EnabledToggleClicked);
+                var gameOnClicked = new UnityAction<bool>(GameToggleClicked);
+                var menuOnClicked = new UnityAction<bool>(MenuToggleClicked);
                 enabledToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(enabledOnClicked);
                 menuToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(menuOnClicked);
                 gameToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(gameOnClicked);
@@ -73,38 +67,38 @@ namespace Weather
 
         public void SetData(Effect eff)
         {
-            currectEff = eff;
-            string IndependentName = eff.GetNameWithoutSceneName();
-            string Game = IndependentName + "Game";
-            string Menu = IndependentName + "Menu";
-            bool showGame = false;
-            bool showMenu = false;
-            if (eff.IsEffectSeperateType())
+            currentEffect = eff;
+            var independentName = eff.GetNameWithoutSceneName();
+            var game = independentName + "Game";
+            var menu = independentName + "Menu";
+            bool showGame;
+            bool showMenu;
+            if (eff.IsEffectSeparateType())
             {
-                Plugin.Log.Info(IndependentName + " Is Independent Type");
-                Effect effGame = EffectModel.GetEffectByName(Game);
-                Effect effMenu = EffectModel.GetEffectByName(Menu);
-                bool val = EffectModel.GetEffectEnabledByName(IndependentName);
-                effGame.enabled = val;
-                effMenu.enabled = val;
-                showGame = effGame.Desc.WorksInGame;
-                showMenu = effMenu.Desc.WorksInMenu;
+                Plugin.Log.Info(independentName + " Is Independent Type");
+                var effGame = EffectModel.GetEffectByName(game);
+                var effMenu = EffectModel.GetEffectByName(menu);
+                var val = EffectModel.GetEffectEnabledByName(independentName);
+                effGame.Enabled = val;
+                effMenu.Enabled = val;
+                showGame = effGame.Desc.worksInGame;
+                showMenu = effMenu.Desc.worksInMenu;
             }
             else
             {
-                Plugin.Log.Info(IndependentName + " Is Not Independent Type");
-                eff.enabled = EffectModel.GetEffectEnabledByName(eff.Desc.EffectName);
-                showGame = eff.Desc.WorksInGame;
-                showMenu = eff.Desc.WorksInMenu;
+                Plugin.Log.Info(independentName + " Is Not Independent Type");
+                eff.Enabled = EffectModel.GetEffectEnabledByName(eff.Desc.effectName);
+                showGame = eff.Desc.worksInGame;
+                showMenu = eff.Desc.worksInMenu;
             }
-            text.text = IndependentName;    
-            enabledToggle.GetComponentInChildren<Toggle>().isOn = EffectModel.GetEffectEnabledByName(eff.Desc.EffectName);
-            Toggle menu = menuToggle.GetComponentInChildren<Toggle>();
-            Toggle game = gameToggle.GetComponentInChildren<Toggle>();
-            menu.interactable = showMenu;
-            game.interactable = showGame;
-            menu.isOn = MiscConfig.ReadObject(IndependentName).showInMenu;
-            game.isOn = MiscConfig.ReadObject(IndependentName).showInGame;
+            text.text = independentName;    
+            enabledToggle.GetComponentInChildren<Toggle>().isOn = EffectModel.GetEffectEnabledByName(eff.Desc.effectName);
+            var menuToggleComponent = menuToggle.GetComponentInChildren<Toggle>();
+            var gameToggleComponent = gameToggle.GetComponentInChildren<Toggle>();
+            menuToggleComponent.interactable = showMenu;
+            gameToggleComponent.interactable = showGame;
+            menuToggleComponent.isOn = MiscConfig.ReadObject(independentName).ShowInMenu;
+            gameToggleComponent.isOn = MiscConfig.ReadObject(independentName).ShowInGame;
         }
     }
 }

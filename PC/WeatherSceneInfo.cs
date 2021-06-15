@@ -4,98 +4,82 @@ using UnityEngine.SceneManagement;
 
 namespace Weather
 {
-    /// <summary>
-    /// Monobehaviours (scripts) are added to GameObjects.
-    /// For a full list of Messages a Monobehaviour can receive from the game, see https://docs.unity3d.com/ScriptReference/MonoBehaviour.html.
-    /// </summary>
 	public class WeatherSceneInfo : MonoBehaviour
     {
         public static Scene CurrentScene;
-        public static int effects = 0;
-        private static bool hasFullSetRefs = false;
+        private static bool _hasFullSetRefs;
 
-        public async void SetRefs()
+        public void SetRefs()
         {
-            hasFullSetRefs = true;
+            _hasFullSetRefs = true;
             Plugin.Log.Info("SetRefs " + CurrentScene.name);
-            WeatherDataRoot weatherInfo = await WeatherFinder.GetWeatherData();
-            MeshRenderer[] mrs = Resources.FindObjectsOfTypeAll<MeshRenderer>();
+            var mrs = Resources.FindObjectsOfTypeAll<MeshRenderer>();
             //Plugin.Log.Info("SetRefs 1");
-            if (CurrentScene.name == Plugin.menu) BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.enabledInMenu);
-            if (CurrentScene.name == Plugin.game) BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.enabledInGameplay);
-            BundleLoader.effects.Clear();
-            for (int x = 0; x < weatherInfo.weather.Length; x++)
-            {
-                WeatherData data = weatherInfo.weather[x];
-                EffectModel.EnableEffect(data.main, true);
-            }
-            for (int i = 0; i < gameObject.transform.childCount; i++)
+            if (CurrentScene.name == Plugin.Menu) BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.EnabledInMenu);
+            if (CurrentScene.name == Plugin.Game) BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.EnabledInGameplay);
+            BundleLoader.Effects.Clear();
+            for (var i = 0; i < gameObject.transform.childCount; i++)
             {
                 //Plugin.Log.Info(i.ToString());
-                Transform Child = gameObject.transform.GetChild(i);
-                Child.gameObject.SetActive(true);
+                var child = gameObject.transform.GetChild(i);
+                child.gameObject.SetActive(true);
 
-                EffectDiscriptor efd = Child.gameObject.GetComponent<EffectDiscriptor>();
-                string NameToUse = EffectModel.GetNameWithoutSceneName(efd.EffectName);
-                Child.gameObject.GetComponentsInChildren<AudioSource>().ToList().ForEach((AudioSource s) => { s.volume = PluginConfig.Instance.audioSFXVolume; });
+                var efd = child.gameObject.GetComponent<EffectDescriptor>();
+                var nameToUse = EffectModel.GetNameWithoutSceneName(efd.effectName);
+                child.gameObject.GetComponentsInChildren<AudioSource>().ToList().ForEach(s => { s.volume = PluginConfig.Instance.AudioSfxVolume; });
                 efd.gameObject.SetActive(true);
                 efd.transform.GetChild(0).gameObject.SetActive(true);
-                Effect eff = new Effect(efd, Child.gameObject, PluginConfig.Instance.enabledEffects.Any((string str) => { return str == efd.EffectName; }));
+                var eff = new Effect(efd, child.gameObject, PluginConfig.Instance.EnabledEffects.Any(str => str == efd.effectName));
                 
-                if (MiscConfig.hasObject(NameToUse))
+                if (MiscConfig.HasObject(nameToUse))
                 {
                     //Plugin.Log.Info("Misc Config has Object! " + NameToUse);
-                    MiscConfigObject Object = MiscConfig.ReadObject(NameToUse);
-                    eff.showInMenu = Object.showInMenu;
-                    eff.showInGame = Object.showInGame;
+                    var @object = MiscConfig.ReadObject(nameToUse);
+                    eff.ShowInMenu = @object.ShowInMenu;
+                    eff.ShowInGame = @object.ShowInGame;
                 }
                 else
                 {
-                    MiscConfig.Add(new MiscConfigObject(NameToUse, eff.showInMenu, eff.showInGame));
+                    MiscConfig.Add(new MiscConfigObject(nameToUse, eff.ShowInMenu, eff.ShowInGame));
                     MiscConfig.Write();
                 }
                 eff.SetActiveRefs();
-                BundleLoader.effects.Add(eff);
+                BundleLoader.Effects.Add(eff);
                 //Plugin.Log.Info("Replacing " + mrs.Length.ToString    ());
-                for (int x = 0; x < mrs.Length; x++)
+                foreach (var mr in mrs)
                 {
-                    MeshRenderer mr = mrs[x];
                     if (mr.material.name.Contains("Note") || mr.gameObject.name.Contains("building") || mr.gameObject.name.Contains("speaker"))
                     {
-                        eff.TrySetNoteMateral(mr);
+                        eff.TrySetNoteMaterial(mr);
                     }
-                    else continue;
                 }
             }
         }
 
         public void SetActiveRefs()
         {
-            if (!hasFullSetRefs) { SetRefs(); return; }
-            MeshRenderer[] mrs = Resources.FindObjectsOfTypeAll<MeshRenderer>();
-            for (int i = 0; i < BundleLoader.effects.Count; i++)
+            if (!_hasFullSetRefs) { SetRefs(); return; }
+            var mrs = Resources.FindObjectsOfTypeAll<MeshRenderer>();
+            foreach (var eff in BundleLoader.Effects)
             {
-                Effect eff = BundleLoader.effects[i];
-                string NameToUse = EffectModel.GetNameWithoutSceneName(eff.Desc.EffectName);
-                if (MiscConfig.hasObject(NameToUse))
+                var nameToUse = EffectModel.GetNameWithoutSceneName(eff.Desc.effectName);
+                if (MiscConfig.HasObject(nameToUse))
                 {
                     //Plugin.Log.Info("Misc Config has Object! " + NameToUse);
-                    MiscConfigObject Object = MiscConfig.ReadObject(NameToUse);
-                    eff.showInMenu = Object.showInMenu;
-                    eff.showInGame = Object.showInGame;
+                    var @object = MiscConfig.ReadObject(nameToUse);
+                    eff.ShowInMenu = @object.ShowInMenu;
+                    eff.ShowInGame = @object.ShowInGame;
                 }
                 else
                 {
-                    MiscConfig.Add(new MiscConfigObject(NameToUse, eff.showInMenu, eff.showInGame));
+                    MiscConfig.Add(new MiscConfigObject(nameToUse, eff.ShowInMenu, eff.ShowInGame));
                 }
-                for (int x = 0; x < mrs.Length; x++)
+                foreach (var mr in mrs)
                 {
-                    MeshRenderer mr = mrs[x];
                     if (mr.material.name.Contains("Note") || mr.gameObject.name.Contains("building") || mr.gameObject.name.Contains("speaker"))
                     {
-                        eff.TrySetNoteMateral(mr);
+                        eff.TrySetNoteMaterial(mr);
                     }
-                    else continue;
                 }
                 eff.SetActiveRefs();
             }

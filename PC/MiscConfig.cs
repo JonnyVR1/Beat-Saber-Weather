@@ -1,107 +1,106 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
+using System.Linq;
 
 namespace Weather
 {
-    class MiscConfigObject
+    internal class MiscConfigObject
     {
-        public string name;
-        public bool showInMenu;
-        public bool showInGame;
+        public readonly string Name;
+        public bool ShowInMenu;
+        public bool ShowInGame;
 
         public MiscConfigObject(string name, bool showInMenu, bool showInGame)
         {
-            this.name = name;
-            this.showInMenu = showInMenu;
-            this.showInGame = showInGame;
+            this.Name = name;
+            this.ShowInMenu = showInMenu;
+            this.ShowInGame = showInGame;
         }
     }
-    class MiscConfigObjectRoot
+
+    internal class MiscConfigObjectRoot
     {
-        public List<MiscConfigObject> miscConfigObjects = new List<MiscConfigObject>();
+        public readonly List<MiscConfigObject> MiscConfigObjects = new List<MiscConfigObject>();
     }
-    class MiscConfig
+
+    internal static class MiscConfig
     {
-        private static MiscConfigObjectRoot Root = new MiscConfigObjectRoot();
-        private static string path = Path.GetFullPath(Path.Combine(Application.persistentDataPath, "WeatherMisConfig.txt"));
-        public static string Serialize(MiscConfigObject Object)
+        private static readonly MiscConfigObjectRoot Root = new MiscConfigObjectRoot();
+        private static readonly string Path = System.IO.Path.GetFullPath(System.IO.Path.Combine(IPA.Utilities.UnityGame.UserDataPath, "WeatherMisConfig.txt"));
+
+        private static string Serialize(MiscConfigObject @object)
         {
-            return Object.name + "_" + Object.showInMenu + "_" + Object.showInGame;
+            return @object.Name + "_" + @object.ShowInMenu + "_" + @object.ShowInGame;
         }
 
-        public static MiscConfigObject Deserialize(string Object)
+        private static MiscConfigObject Deserialize(string @object)
         {
-            string[] parts = Object.Split('_');
+            var parts = @object.Split('_');
             return new MiscConfigObject(parts[0], bool.Parse(parts[1]), bool.Parse(parts[2]));
         }
         public static void Write()
         {
-            Plugin.Log.Info(path);
-            List<string> lines = new List<string>();
-            foreach(MiscConfigObject Object in Root.miscConfigObjects)
+            Plugin.Log.Info(Path);
+            var lines = new List<string>();
+            foreach (var serialized in Root.MiscConfigObjects.Select(Serialize))
             {
-                string serialized = Serialize(Object);
                 Plugin.Log.Info(serialized);
                 lines.Add(serialized);
             }
-            File.WriteAllLines(path, lines);
+            File.WriteAllLines(Path, lines);
         }
 
-        public static void Add(MiscConfigObject Object)
+        public static void Add(MiscConfigObject @object)
         {
-            Root.miscConfigObjects.Add(Object);
+            Root.MiscConfigObjects.Add(@object);
         }
 
         public static void Read()
         {
-            if (!File.Exists(path)) { File.WriteAllText(path, ""); return; }
-            string[] lines = File.ReadAllLines(path);
-            Root.miscConfigObjects.Clear();
-            foreach (string line in lines)
+            if (!File.Exists(Path)) { File.WriteAllText(Path, ""); return; }
+            var lines = File.ReadAllLines(Path);
+            Root.MiscConfigObjects.Clear();
+            foreach (var line in lines)
             {
-                string[] parts = line.Split('_');
+                var parts = line.Split('_');
 
-                Root.miscConfigObjects.Add(new MiscConfigObject(parts[0], bool.Parse(parts[1]), bool.Parse(parts[2])));
+                Root.MiscConfigObjects.Add(new MiscConfigObject(parts[0], bool.Parse(parts[1]), bool.Parse(parts[2])));
             }
         }
 
-        public static void WriteToObject(MiscConfigObject Object)
+        public static void WriteToObject(MiscConfigObject @object)
         {
-            string[] arrLine = File.ReadAllLines(path);
-            for(int i = 0; i < arrLine.Length; i++)
+            var arrLine = File.ReadAllLines(Path);
+            for(var i = 0; i < arrLine.Length; i++)
             {
-                string line = arrLine[i];
-                string[] parts = line.Split('_');
-                if(parts[0] == Object.name)
-                    arrLine[i] = Serialize(Object);
+                var line = arrLine[i];
+                var parts = line.Split('_');
+                if(parts[0] == @object.Name)
+                    arrLine[i] = Serialize(@object);
             }
-            File.WriteAllLines(path, arrLine);
+            File.WriteAllLines(Path, arrLine);
         }
 
         public static MiscConfigObject ReadObject(string name)
         {
-            string[] arrLine = File.ReadAllLines(path);
-            MiscConfigObject Out = new MiscConfigObject(name, true, true);
-            for (int i = 0; i < arrLine.Length; i++)
+            var arrLine = File.ReadAllLines(Path);
+            var @out = new MiscConfigObject(name, true, true);
+            foreach (var line in arrLine)
             {
-                string line = arrLine[i];
-                Out = Deserialize(line);   
+                @out = Deserialize(line);
             }
-            return Out;
+            return @out;
         }
 
-        public static bool hasObject(string name)
+        public static bool HasObject(string name)
         {
-            string[] arrLine = File.ReadAllLines(path);
-            bool hasObject = false;
-            for (int i = 0; i < arrLine.Length; i++)
+            var arrLine = File.ReadAllLines(Path);
+            foreach (var line in arrLine)
             {
-                string line = arrLine[i];
-                string[] parts = line.Split('_');
-                if (parts[0] == name) hasObject = true;
+                var parts = line.Split('_');
+                if (parts[0] == name) return true;
             }
-            return hasObject;
+            return false;
         }
     }
 }

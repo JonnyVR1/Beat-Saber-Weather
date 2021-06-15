@@ -7,4 +7,4 @@ if (-not ($PSVersionTable.PSEdition -eq "Core")) {
 }
 
 & $buildScript NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk
-Compress-Archive -Path "./libs/arm64-v8a/libweather.so","./bmbfmod.json","./extern/libbeatsaber-hook_1_0_10.so","./extern/libbs-utils.so","./extern/libcustom-types.so" -DestinationPath "./Weather.zip" -Update
+Compress-Archive -Path "./libs/arm64-v8a/libweather.so","./bmbfmod.json","./extern/libbeatsaber-hook_1_0_12.so","./extern/libbs-utils.so" -DestinationPath "./Weather.zip" -Update

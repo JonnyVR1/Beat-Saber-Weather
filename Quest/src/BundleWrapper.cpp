@@ -9,6 +9,7 @@
 #include "UnityEngine/Object.hpp"
 #include "UnityEngine/TextAsset.hpp"
 #include "UnityEngine/Resources.hpp"
+#include <unistd.h>
 
 static Weather::EffectDescTemp* ParseJSON(std::string json)
 {
@@ -54,6 +55,7 @@ void Weather::BundleWrapper::PrefabLoaded(bs_utils::AssetBundle* b)
     desc->WorksInGame = this->desc->WorksInGame;
     this->descMain = desc;
     effectObj->SetActive(false);
+    usleep(25);
     static auto Unload = reinterpret_cast<function_ptr_t<void, UnityEngine::Object*>>(il2cpp_functions::resolve_icall("UnityEngine.Resources::UnloadAsset"));
     Unload(this->prefab);
     ((UnityEngine::AssetBundle*)b)->Unload(false);

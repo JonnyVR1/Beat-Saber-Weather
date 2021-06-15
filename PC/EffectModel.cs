@@ -1,78 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Weather
+﻿namespace Weather
 {
-    static class EffectModel
+    internal static class EffectModel
     {
         public static Effect GetEffectByName(string name)
         {
-            Effect Out = null;
-            foreach (Effect e in BundleLoader.effects)
+            Effect @out = null;
+            foreach (var e in BundleLoader.Effects)
             {
-                if (e.Desc.EffectName == name) Out = e;
+                if (e.Desc.effectName == name) @out = e;
             }
-            return Out;
+            return @out;
         }
         public static bool GetEffectEnabledByName(string name)
         {
-            return PluginConfig.Instance.enabledEffects.Contains(GetNameWithoutSceneName(name));
+            return PluginConfig.Instance.EnabledEffects.Contains(GetNameWithoutSceneName(name));
         }
         //Idk what to name this but basically this says if it should be seperated and have Game/Menu removed
-        public static bool IsEffectSeperateType(string name)
+        private static bool IsEffectSeparateType(string name)
         {
-            Plugin.Log.Debug("{IsEffectSeperateType} " + name + (name.EndsWith("Menu") || name.EndsWith("Game")).ToString() );
+            Plugin.Log.Debug("{IsEffectSeparateType} " + name + (name.EndsWith("Menu") || name.EndsWith("Game")).ToString() );
             return name.EndsWith("Menu") || name.EndsWith("Game");
         }
-        public static bool IsEffectSeperateType(this Effect eff) => IsEffectSeperateType(eff.Desc.EffectName);
-        //Idk what to name this either but it gets the name without scene seperation so RainMenu->Rain or RainGame->Rain
+        public static bool IsEffectSeparateType(this Effect eff) => IsEffectSeparateType(eff.Desc.effectName);
+        //Idk what to name this either but it gets the name without scene separation so RainMenu->Rain or RainGame->Rain
         public static string GetNameWithoutSceneName(string name)
         {
-            if(IsEffectSeperateType(name))
+            if(IsEffectSeparateType(name))
             {
                 //Game
-                string New = name.Substring(0, name.Length-4);
-                return New;
+                var @new = name.Substring(0, name.Length-4);
+                return @new;
             }
             return name;
         }
-        public static string GetNameWithoutSceneName(this Effect eff) => GetNameWithoutSceneName(eff.Desc.EffectName);
+        public static string GetNameWithoutSceneName(this Effect eff) => GetNameWithoutSceneName(eff.Desc.effectName);
 
-        public static void EnableEffect(string name, bool Value)
+        public static void EnableEffect(string name, bool value)
         {
-            string NewName = GetNameWithoutSceneName(name);
+            var newName = GetNameWithoutSceneName(name);
             //Plugin.Log.Info(NewName + " " + name);
-            string Game = NewName + "Game";
-            string Menu = NewName + "Menu";
-            if(IsEffectSeperateType(name))
+            var game = newName + "Game";
+            var menu = newName + "Menu";
+            if(IsEffectSeparateType(name))
             {
-                Plugin.Log.Info(NewName + " Is Independent " + name);
-                Effect effGame = GetEffectByName(Game);
-                Effect effMenu = GetEffectByName(Menu);
-                effGame.enabled = Value;
-                effMenu.enabled = Value;
+                Plugin.Log.Info(newName + " Is Independent " + name);
+                var effGame = GetEffectByName(game);
+                var effMenu = GetEffectByName(menu);
+                effGame.Enabled = value;
+                effMenu.Enabled = value;
                 
-                if (Value)
-                    PluginConfig.Instance.AddEffect(NewName);
+                if (value)
+                    PluginConfig.Instance.AddEffect(newName);
                 else
-                    PluginConfig.Instance.enabledEffects.Remove(NewName);
+                    PluginConfig.Instance.EnabledEffects.Remove(newName);
                 
                 effGame.SetActiveRefs();
                 effMenu.SetActiveRefs();
 
                 return;
             }
-            Effect eff = GetEffectByName(name);
+            var eff = GetEffectByName(name);
             if (eff == null) return;
-            eff.enabled = Value;
+            eff.Enabled = value;
             
-            if (Value)
+            if (value)
                 PluginConfig.Instance.AddEffect(name);
             else
-                PluginConfig.Instance.enabledEffects.Remove(name);
+                PluginConfig.Instance.EnabledEffects.Remove(name);
             eff.SetActiveRefs();
         }
     }
