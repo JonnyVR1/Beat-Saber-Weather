@@ -7,9 +7,9 @@ namespace Weather
     public class NotePatch
     {
         // ReSharper disable once ArrangeTypeMemberModifiers
-        static void Postfix(Component instance)
+        static void Postfix(ref NoteController __instance)
         {
-            var obj = instance.gameObject;
+            var obj = __instance.gameObject;
             var mrs = obj.GetComponentsInChildren<MeshRenderer>();
             foreach (var t in BundleLoader.Effects)
             {
