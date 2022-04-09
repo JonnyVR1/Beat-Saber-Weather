@@ -18,15 +18,17 @@ namespace Weather
         [UIComponent("effectList")]
         public CustomListTableData customListTableData;
 
-        private readonly List<Effect> effsInTable = new List<Effect>();
+        private readonly List<Effect> _effsInTable = new List<Effect>();
         [UIAction("effectSelect")]
         public void Select(TableView table, int row)
         {
             flow.ShowEffectSettings();
-            flow.EffectViewController.SetData(effsInTable[row]);
+            flow.EffectViewController.SetData(_effsInTable[row]);
         }
+
         //Wasn't sure about how to go about this
-        private readonly List<string> multiTypeAdded = new List<string>();
+        private readonly List<string> _multiTypeAdded = new List<string>();
+
         [UIAction("#post-parse")]
         public void SetupList()
         {
@@ -36,16 +38,14 @@ namespace Weather
             {   
                 if(effect.IsEffectSeparateType())
                 {
-                    if (multiTypeAdded.Contains(EffectModel.GetNameWithoutSceneName(effect.Desc.effectName)))
+                    if (_multiTypeAdded.Contains(EffectModel.GetNameWithoutSceneName(effect.Desc.effectName)))
                     {
                         continue;
                     }
-                    else
-                    {
-                        multiTypeAdded.Add(EffectModel.GetNameWithoutSceneName(effect.Desc.effectName));
-                    }
+
+                    _multiTypeAdded.Add(EffectModel.GetNameWithoutSceneName(effect.Desc.effectName));
                 }
-                effsInTable.Add(effect);
+                _effsInTable.Add(effect);
                 var customCellInfo = new CustomListTableData.CustomCellInfo(EffectModel.GetNameWithoutSceneName(effect.Desc.effectName), effect.Desc.author, effect.Desc.coverImage);
                 customListTableData.data.Add(customCellInfo);
             }

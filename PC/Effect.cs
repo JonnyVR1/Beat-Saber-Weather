@@ -32,11 +32,11 @@ namespace Weather
             switch (WeatherSceneInfo.CurrentScene.name)
             {
                 case Plugin.Menu:
-                    Plugin.Log.Info(Desc.effectName + (Desc.worksInMenu && ShowInMenu).ToString());
+                    Plugin.Log.Info(Desc.effectName + (Desc.worksInMenu && ShowInMenu));
                     GameObject.SetActive((Desc.worksInMenu && ShowInMenu));
                     break;
                 case Plugin.Game:
-                    Plugin.Log.Info(Desc.effectName + (Desc.worksInGame && ShowInGame).ToString());
+                    Plugin.Log.Info(Desc.effectName + (Desc.worksInGame && ShowInGame));
                     GameObject.SetActive((Desc.worksInGame && ShowInGame));
                     break;
             }
