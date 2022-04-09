@@ -9,19 +9,25 @@
             {
                 if (e.Desc.effectName == name) @out = e;
             }
+
             return @out;
         }
+
         public static bool GetEffectEnabledByName(string name)
         {
             return PluginConfig.Instance.EnabledEffects.Contains(GetNameWithoutSceneName(name));
         }
+
         //Idk what to name this but basically this says if it should be seperated and have Game/Menu removed
         private static bool IsEffectSeparateType(string name)
         {
-            Plugin.Log.Debug("{IsEffectSeparateType} " + name + (name.EndsWith("Menu") || name.EndsWith("Game")).ToString() );
+            if (name == null) return false;
+            Plugin.Log.Debug("{IsEffectSeparateType} " + name + (name.EndsWith("Menu") || name.EndsWith("Game")) );
             return name.EndsWith("Menu") || name.EndsWith("Game");
         }
+
         public static bool IsEffectSeparateType(this Effect eff) => IsEffectSeparateType(eff.Desc.effectName);
+
         //Idk what to name this either but it gets the name without scene separation so RainMenu->Rain or RainGame->Rain
         public static string GetNameWithoutSceneName(string name)
         {
@@ -33,6 +39,7 @@
             }
             return name;
         }
+
         public static string GetNameWithoutSceneName(this Effect eff) => GetNameWithoutSceneName(eff.Desc.effectName);
 
         public static void EnableEffect(string name, bool value)
@@ -48,25 +55,35 @@
                 var effMenu = GetEffectByName(menu);
                 effGame.Enabled = value;
                 effMenu.Enabled = value;
-                
+
                 if (value)
+                {
                     PluginConfig.Instance.AddEffect(newName);
+                }
                 else
+                {
                     PluginConfig.Instance.EnabledEffects.Remove(newName);
+                }
                 
                 effGame.SetActiveRefs();
                 effMenu.SetActiveRefs();
 
                 return;
             }
+
             var eff = GetEffectByName(name);
             if (eff == null) return;
             eff.Enabled = value;
-            
+
             if (value)
+            {
                 PluginConfig.Instance.AddEffect(name);
+            }
             else
+            {
                 PluginConfig.Instance.EnabledEffects.Remove(name);
+            }
+
             eff.SetActiveRefs();
         }
     }
