@@ -3,7 +3,7 @@
   "id": "Weather",
   "name": "Weather",
   "author": "FutureMapper",
-  "version": "0.1.4",
+  "version": "0.3.0",
   "description": "",
   "gameVersion": "1.22.0",
   "dependsOn": {

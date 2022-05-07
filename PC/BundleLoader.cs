@@ -87,9 +87,7 @@ namespace Weather
 
            try
             {
-                Plugin.Log.Info($"New format");
                 efdTemp = JsonUtility.FromJson<TempDesc012>(json.text);
-                Plugin.Log.Info($"efdTemp name is {efdTemp.EffectName}");
             }
             catch
             {
