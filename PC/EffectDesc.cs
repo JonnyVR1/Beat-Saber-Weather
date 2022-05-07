@@ -12,11 +12,12 @@ namespace Weather
         [SerializeField] public Sprite coverImage;
     }   
 
-    public abstract class TempDesc011
+    [System.Serializable]
+    public class TempDesc011
     {
-        public readonly string Author;
-        public readonly string EffectName;
-        public readonly bool WorksInMenu;
+        public string Author;
+        public string EffectName;
+        public bool WorksInMenu;
 
         protected TempDesc011(string author, string effectName, bool worksInMenu)
         {
@@ -26,13 +27,14 @@ namespace Weather
         }
     }
 
+    [System.Serializable]
     public class TempDesc012
     {
-        public readonly string Author;
-        public readonly string EffectName;
-        public readonly bool WorksInMenu;
-        public readonly bool WorksInGame;
-        public Texture2D CoverImage = null;
+        public string Author;
+        public string EffectName;
+        public bool WorksInMenu;
+        public bool WorksInGame;
+        public Texture2D CoverImage;
 
         public TempDesc012(string author, string effectName, bool worksInMenu, bool worksInGame)
         {

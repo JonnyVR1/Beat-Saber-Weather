@@ -35,8 +35,8 @@ namespace Weather
             customListTableData.tableView.ClearSelection();
             customListTableData.data.Clear();
             foreach (var effect in BundleLoader.Effects)
-            {   
-                if(effect.IsEffectSeparateType())
+            {
+                if (effect.IsEffectSeparateType())
                 {
                     if (_multiTypeAdded.Contains(EffectModel.GetNameWithoutSceneName(effect.Desc.effectName)))
                     {

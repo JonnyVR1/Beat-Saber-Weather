@@ -21,7 +21,8 @@ namespace Weather
         {
             DefaultTex = Utils.LoadSpriteFromResources("Weather.DefaultCover.png");
         }
-        public static bool LoadFromFileAsync(string path, Action<AsyncOperation, string> callback)
+
+        public static void LoadFromFileAsync(string path, Action<AsyncOperation, string> callback)
         {
             if (File.Exists(path))
             {
@@ -30,25 +31,23 @@ namespace Weather
                 Action<AsyncOperation> action = async => { callback(async, path); };
                 bundleAsync.completed += action;
             }
-            else return false;
-            return true;
         }
+
         public static void Load()
         {
             LoadDefaultCover();
             WeatherPrefab = new GameObject("Weather", typeof(WeatherSceneInfo));    
             Object.DontDestroyOnLoad(WeatherPrefab);
             var effectsPath = Path.Combine(IPA.Utilities.UnityGame.UserDataPath, "Weather", "Effects");
-            //Plugin.Log.Info(EffectsPath);
 
             if (!Directory.Exists(effectsPath))
+            {
                 Directory.CreateDirectory(effectsPath);
+            }
 
             var paths = Directory.GetFiles(effectsPath, "*.effect");
-            for (var i = 0; i < paths.Length; i++)
+            foreach (var path in paths)
             {
-                var path = paths[i];
-                //Plugin.Log.Info(Path);
                 LoadFromFileAsync(path, LoadFromBundle);
             }
         }
@@ -57,14 +56,15 @@ namespace Weather
         {
             var bundle = (bundleRequest as AssetBundleCreateRequest).assetBundle;
             var json = bundle.LoadAsset<TextAsset>("assets/effectJson.asset");
-            Sprite cover = null;
+            Sprite cover;
             var coverPath = "";
+
             foreach(var path in bundle.GetAllAssetNames())
             {
-                if (path.StartsWith("assets/covers/"))
-                    coverPath = path;
+                if (path.StartsWith("assets/covers/")) coverPath = path;
             }
-            if(coverPath != "")
+
+            if (coverPath != "")
             {
                 try
                 {
@@ -77,14 +77,19 @@ namespace Weather
                 }
             }
             else
+            {
                 cover = DefaultTex;
+            }
             
             var eff = Object.Instantiate(bundle.LoadAsset<GameObject>("assets/Effect.prefab"), WeatherPrefab.transform);
             eff.SetActive(false);
             TempDesc012 efdTemp = null;
-            try
+
+           try
             {
+                Plugin.Log.Info($"New format");
                 efdTemp = JsonUtility.FromJson<TempDesc012>(json.text);
+                Plugin.Log.Info($"efdTemp name is {efdTemp.EffectName}");
             }
             catch
             {
@@ -96,9 +101,10 @@ namespace Weather
                 catch
                 {
                     var fileName = Path.GetFileNameWithoutExtension(filePath);
-                    Plugin.Log.Error(string.Format("{0} Failed To Load! Json: {1}", fileName, json.text));
+                    Plugin.Log.Error($"{fileName} Failed To Load! Json: {json.text}");
                 }
             }
+
             var efd = eff.AddComponent<EffectDescriptor>();
             efd.author = efdTemp.Author;
             efd.effectName = efdTemp.EffectName;

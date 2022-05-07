@@ -17,8 +17,8 @@ namespace Weather
             Desc = effectDescriptor;
             GameObject = gameObject;
             Enabled = enabled;
-            
         }
+
         public void SetActiveRefs(bool force = false)
         {
             Plugin.Log.Info("Setting Active Refs " + Desc.effectName + " " + WeatherSceneInfo.CurrentScene.name);
@@ -41,6 +41,7 @@ namespace Weather
                     break;
             }
         }
+
         public void SetSceneMaterials()
         {
             var grab = GameObject.transform.GetChild(0).Find("NotesShader");
@@ -54,6 +55,7 @@ namespace Weather
                 }
             }
         }
+
         public void RemoveSceneMaterials()
         {
             var grab = GameObject.transform.GetChild(0).Find("NotesShader");
@@ -68,6 +70,7 @@ namespace Weather
                 mr.materials = mats.ToArray();
             }
         }
+
         public void TrySetNoteMaterial(MeshRenderer mr)
         {
             if (!Enabled) return;
