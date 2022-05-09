@@ -10,10 +10,10 @@ namespace Weather
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class PluginConfig
     {
-        
         public static PluginConfig Instance = null;
+
         [NonNullable, UseConverter(typeof(ListConverter<string>))]
-        public virtual List<string> EnabledEffects { get; set; } = new List<string>();
+        public virtual List<string> EnabledEffects { get; set; } = new();
         public virtual bool ShowCityName { get; set; } = true;
         
         public virtual float AudioSfxVolume { get; set; } = 1f;
@@ -22,7 +22,7 @@ namespace Weather
 
         public void AddEffect(string name)
         {
-            if(!EnabledEffects.Contains(name))
+            if (!EnabledEffects.Contains(name))
             {
                 EnabledEffects.Add(name);
             }

@@ -18,7 +18,7 @@ namespace Weather
         [UIComponent("effectList")]
         public CustomListTableData customListTableData;
 
-        private readonly List<Effect> _effsInTable = new List<Effect>();
+        private readonly List<Effect> _effsInTable = new();
         [UIAction("effectSelect")]
         public void Select(TableView table, int row)
         {
@@ -27,7 +27,7 @@ namespace Weather
         }
 
         //Wasn't sure about how to go about this
-        private readonly List<string> _multiTypeAdded = new List<string>();
+        private readonly List<string> _multiTypeAdded = new();
 
         [UIAction("#post-parse")]
         public void SetupList()

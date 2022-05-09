@@ -1,12 +1,13 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Weather
+namespace Weather.HarmonyPatches
 {
     [HarmonyPatch(typeof(NoteController), "Init")]
     public class NotePatch
     {
-        // ReSharper disable once ArrangeTypeMemberModifiers
+        [UsedImplicitly]
         static void Postfix(NoteController __instance)
         {
             var obj = __instance.gameObject;

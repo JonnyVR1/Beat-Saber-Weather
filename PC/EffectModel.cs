@@ -31,13 +31,11 @@
         //Idk what to name this either but it gets the name without scene separation so RainMenu->Rain or RainGame->Rain
         public static string GetNameWithoutSceneName(string name)
         {
-            if(IsEffectSeparateType(name))
-            {
-                //Game
-                var @new = name.Substring(0, name.Length-4);
-                return @new;
-            }
-            return name;
+            if (!IsEffectSeparateType(name)) return name;
+
+            //Game
+            var @new = name.Substring(0, name.Length-4);
+            return @new;
         }
 
         public static string GetNameWithoutSceneName(this Effect eff) => GetNameWithoutSceneName(eff.Desc.effectName);
@@ -45,10 +43,10 @@
         public static void EnableEffect(string name, bool value)
         {
             var newName = GetNameWithoutSceneName(name);
-            //Plugin.Log.Info(NewName + " " + name);
             var game = newName + "Game";
             var menu = newName + "Menu";
-            if(IsEffectSeparateType(name))
+
+            if (IsEffectSeparateType(name))
             {
                 Plugin.Log.Info(newName + " Is Independent " + name);
                 var effGame = GetEffectByName(game);

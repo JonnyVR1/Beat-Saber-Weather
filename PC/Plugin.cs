@@ -12,11 +12,9 @@ using IPALogger = IPA.Logging.Logger;
 namespace Weather
 {
     [Plugin(RuntimeOptions.DynamicInit)]
-    // ReSharper disable once ClassNeverInstantiated.Global
     internal class Plugin
     {
         private static bool _hasEmptyTransitioned;
-
         internal static IPALogger Log { get; private set; }
         internal static Harmony Harmony { get; private set; }
         internal static IPA.Config.Config Config { get; private set; }
@@ -64,19 +62,22 @@ namespace Weather
                 _hasEmptyTransitioned = true;
                 BundleLoader.Load();
             }
+
             if (!_hasEmptyTransitioned && arg2.name == "EmptyTransition")
             {
                 _hasEmptyTransitioned = true;
                 BundleLoader.Load();
             }
-            if (arg2.name == Menu)
+
+            switch (arg2.name)
             {
-                Log.Debug(Menu);
-                MenuSceneActive();
-            }
-            if (arg2.name == Game)
-            {
-                GameSceneActive();
+                case Menu:
+                    Log.Debug(Menu);
+                    MenuSceneActive();
+                    break;
+                case Game:
+                    GameSceneActive();
+                    break;
             }
         }
 

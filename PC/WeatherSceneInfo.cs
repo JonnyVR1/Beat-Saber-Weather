@@ -14,13 +14,20 @@ namespace Weather
             _hasFullSetRefs = true;
             Plugin.Log.Info("SetRefs " + CurrentScene.name);
             var mrs = Resources.FindObjectsOfTypeAll<MeshRenderer>();
-            //Plugin.Log.Info("SetRefs 1");
-            if (CurrentScene.name == Plugin.Menu) BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.EnabledInMenu);
-            if (CurrentScene.name == Plugin.Game) BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.EnabledInGameplay);
+
+            switch (CurrentScene.name)
+            {
+                case Plugin.Menu:
+                    BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.EnabledInMenu);
+                    break;
+                case Plugin.Game:
+                    BundleLoader.WeatherPrefab.SetActive(PluginConfig.Instance.EnabledInGameplay);
+                    break;
+            }
+
             BundleLoader.Effects.Clear();
             for (var i = 0; i < gameObject.transform.childCount; i++)
             {
-                //Plugin.Log.Info(i.ToString());
                 var child = gameObject.transform.GetChild(i);
                 child.gameObject.SetActive(true);
 
@@ -33,7 +40,6 @@ namespace Weather
                 
                 if (MiscConfig.HasObject(nameToUse))
                 {
-                    //Plugin.Log.Info("Misc Config has Object! " + NameToUse);
                     var @object = MiscConfig.ReadObject(nameToUse);
                     eff.ShowInMenu = @object.ShowInMenu;
                     eff.ShowInGame = @object.ShowInGame;
@@ -43,9 +49,10 @@ namespace Weather
                     MiscConfig.Add(new MiscConfigObject(nameToUse, eff.ShowInMenu, eff.ShowInGame));
                     MiscConfig.Write();
                 }
+
                 eff.SetActiveRefs();
                 BundleLoader.Effects.Add(eff);
-                //Plugin.Log.Info("Replacing " + mrs.Length.ToString    ());
+
                 foreach (var mr in mrs)
                 {
                     if (mr.material.name.Contains("Note") || mr.gameObject.name.Contains("building") || mr.gameObject.name.Contains("speaker"))
@@ -65,7 +72,6 @@ namespace Weather
                 var nameToUse = EffectModel.GetNameWithoutSceneName(eff.Desc.effectName);
                 if (MiscConfig.HasObject(nameToUse))
                 {
-                    //Plugin.Log.Info("Misc Config has Object! " + NameToUse);
                     var @object = MiscConfig.ReadObject(nameToUse);
                     eff.ShowInMenu = @object.ShowInMenu;
                     eff.ShowInGame = @object.ShowInGame;
@@ -74,6 +80,7 @@ namespace Weather
                 {
                     MiscConfig.Add(new MiscConfigObject(nameToUse, eff.ShowInMenu, eff.ShowInGame));
                 }
+
                 foreach (var mr in mrs)
                 {
                     if (mr.material.name.Contains("Note") || mr.gameObject.name.Contains("building") || mr.gameObject.name.Contains("speaker"))
@@ -81,6 +88,7 @@ namespace Weather
                         eff.TrySetNoteMaterial(mr);
                     }
                 }
+
                 eff.SetActiveRefs();
             }
         }

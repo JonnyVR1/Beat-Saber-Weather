@@ -23,7 +23,7 @@ namespace Weather
         {
             Plugin.Log.Info("Setting Active Refs " + Desc.effectName + " " + WeatherSceneInfo.CurrentScene.name);
             Enabled = EffectModel.GetEffectEnabledByName(Desc.effectName) || force;
-            if(!Enabled)
+            if (!Enabled)
             {
                 GameObject.SetActive(false);
                 return;
@@ -33,11 +33,11 @@ namespace Weather
             {
                 case Plugin.Menu:
                     Plugin.Log.Info(Desc.effectName + (Desc.worksInMenu && ShowInMenu));
-                    GameObject.SetActive((Desc.worksInMenu && ShowInMenu));
+                    GameObject.SetActive(Desc.worksInMenu && ShowInMenu);
                     break;
                 case Plugin.Game:
                     Plugin.Log.Info(Desc.effectName + (Desc.worksInGame && ShowInGame));
-                    GameObject.SetActive((Desc.worksInGame && ShowInGame));
+                    GameObject.SetActive(Desc.worksInGame && ShowInGame);
                     break;
             }
         }
@@ -46,13 +46,12 @@ namespace Weather
         {
             var grab = GameObject.transform.GetChild(0).Find("NotesShader");
             if (grab == null) return;
+
             var mrs = Resources.FindObjectsOfTypeAll<MeshRenderer>();
             foreach (var mr in mrs)
             {
-                if (mr.material.name.Contains("Note") || mr.gameObject.name.Contains("building") || mr.gameObject.name.Contains("speaker"))
-                {
-                    TrySetNoteMaterial(mr);
-                }
+                if (!mr.material.name.Contains("Note") && !mr.gameObject.name.Contains("building") && !mr.gameObject.name.Contains("speaker")) continue;
+                TrySetNoteMaterial(mr);
             }
         }
 
@@ -60,11 +59,12 @@ namespace Weather
         {
             var grab = GameObject.transform.GetChild(0).Find("NotesShader");
             if (grab == null) return;
+
             var mrs = Resources.FindObjectsOfTypeAll<MeshRenderer>();
             foreach (var mr in mrs)
             {
-                if (!mr.material.name.Contains("Note") && !mr.gameObject.name.Contains("building") &&
-                    !mr.gameObject.name.Contains("speaker")) continue;
+                if (!mr.material.name.Contains("Note") && !mr.gameObject.name.Contains("building") && !mr.gameObject.name.Contains("speaker")) continue;
+
                 var mats = mr.sharedMaterials.ToList();
                 mats.RemoveAt(1);
                 mr.materials = mats.ToArray();
@@ -76,10 +76,14 @@ namespace Weather
             if (!Enabled) return;
             var grab = GameObject.transform.GetChild(0).Find("NotesShader");
             if (grab == null) return;
+
             var noteMaterial = grab.GetComponent<MeshRenderer>().material;
             var mats = mr.sharedMaterials.ToList();
-            if(mats.Count == 1)
+            if (mats.Count == 1)
+            {
                 mats.Add(noteMaterial);
+            }
+
             mr.materials = mats.ToArray();
         }
     }

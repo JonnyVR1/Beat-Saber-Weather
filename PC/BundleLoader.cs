@@ -14,7 +14,7 @@ namespace Weather
 	public static class BundleLoader
     {
         public static GameObject WeatherPrefab;
-        public static List<Effect> Effects = new List<Effect>();
+        public static List<Effect> Effects = new();
         public static Sprite DefaultTex;
         
         public static void LoadDefaultCover()

@@ -13,15 +13,15 @@ namespace Weather
 		{
 			forecastViewController = BeatSaberUI.CreateViewController<Forecast>();
 			EffectViewController = BeatSaberUI.CreateViewController<EffectSettings>();
+
 			try
 			{
-				if (firstActivation)
-				{
-					SetTitle("Forecast");
-					showBackButton = true;
-					forecastViewController.flow = this;
-					ProvideInitialViewControllers(forecastViewController);
-				}
+				if (!firstActivation) return;
+
+				SetTitle("Forecast");
+				showBackButton = true;
+				forecastViewController.flow = this;
+				ProvideInitialViewControllers(forecastViewController);
 			}
 			catch (Exception ex)
 			{

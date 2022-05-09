@@ -10,13 +10,9 @@ namespace Weather
         {
             if (!file.Any()) return null;
             var tex2D = new Texture2D(2, 2);
-            if (tex2D.LoadImage(file))
-            {
-                return tex2D;
-            }
-
-            return null;
+            return tex2D.LoadImage(file) ? tex2D : null;
         }
+
         public static Sprite LoadSpriteFromResources(string resourcePath, float pixelsPerUnit = 100.0f)
         {
             return LoadSpriteRaw(LoadFromResource(resourcePath), pixelsPerUnit);
@@ -41,6 +37,7 @@ namespace Weather
         {
             var stream = assembly.GetManifestResourceStream(resourcePath);
             if (stream == null) return null;
+
             var data = new byte[stream.Length];
             stream.Read(data, 0, (int)stream.Length);
             return data;

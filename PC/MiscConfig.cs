@@ -20,12 +20,12 @@ namespace Weather
 
     internal class MiscConfigObjectRoot
     {
-        public readonly List<MiscConfigObject> MiscConfigObjects = new List<MiscConfigObject>();
+        public readonly List<MiscConfigObject> MiscConfigObjects = new();
     }
 
     internal static class MiscConfig
     {
-        private static readonly MiscConfigObjectRoot Root = new MiscConfigObjectRoot();
+        private static readonly MiscConfigObjectRoot Root = new();
         private static readonly string Path = System.IO.Path.GetFullPath(System.IO.Path.Combine(IPA.Utilities.UnityGame.UserDataPath, "WeatherMisConfig.txt"));
 
         private static string Serialize(MiscConfigObject @object)

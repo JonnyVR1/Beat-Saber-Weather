@@ -17,8 +17,10 @@ namespace Weather
 
         [UIObject("Enabled")]
         private readonly GameObject enabledToggle = null;
+
         [UIObject("ShowMenu")]
         private readonly GameObject menuToggle = null;
+
         [UIObject("ShowGame")]
         private readonly GameObject gameToggle = null;
 
@@ -27,8 +29,15 @@ namespace Weather
         private void EnabledToggleClicked(bool value)
         {
             EffectModel.EnableEffect(currentEffect.Desc.effectName, enabledToggle.GetComponentInChildren<Toggle>().isOn);
-            if (value) currentEffect.SetSceneMaterials();
-            if (!value) currentEffect.RemoveSceneMaterials();
+            switch (value)
+            {
+                case true:
+                    currentEffect.SetSceneMaterials();
+                    break;
+                case false:
+                    currentEffect.RemoveSceneMaterials();
+                    break;
+            }
         }
 
         private void GameToggleClicked(bool value)
@@ -36,6 +45,7 @@ namespace Weather
             Plugin.Log.Info("GameToggleClicked");
             currentEffect.ShowInGame = value;
             currentEffect.SetActiveRefs();
+
             var configObject = MiscConfig.ReadObject(EffectModel.GetNameWithoutSceneName(currentEffect.Desc.effectName));
             configObject.ShowInGame = value;
             MiscConfig.WriteToObject(configObject);
@@ -46,25 +56,33 @@ namespace Weather
             Plugin.Log.Info("MenuToggleClicked");
             currentEffect.ShowInMenu = value;
             currentEffect.SetActiveRefs();
+
             var configObject = MiscConfig.ReadObject(EffectModel.GetNameWithoutSceneName(currentEffect.Desc.effectName));
             configObject.ShowInMenu = value;
             MiscConfig.WriteToObject(configObject);
-            if (value) currentEffect.SetSceneMaterials();
-            if (!value) currentEffect.RemoveSceneMaterials();
+
+            switch (value)
+            {
+                case true:
+                    currentEffect.SetSceneMaterials();
+                    break;
+                case false:
+                    currentEffect.RemoveSceneMaterials();
+                    break;
+            }
         }
 
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
-            if(firstActivation)
-            {
-                var enabledOnClicked = new UnityAction<bool>(EnabledToggleClicked);
-                var gameOnClicked = new UnityAction<bool>(GameToggleClicked);
-                var menuOnClicked = new UnityAction<bool>(MenuToggleClicked);
-                enabledToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(enabledOnClicked);
-                menuToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(menuOnClicked);
-                gameToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(gameOnClicked);
-            }
+            if (!firstActivation) return;
+
+            var enabledOnClicked = new UnityAction<bool>(EnabledToggleClicked);
+            var gameOnClicked = new UnityAction<bool>(GameToggleClicked);
+            var menuOnClicked = new UnityAction<bool>(MenuToggleClicked);
+            enabledToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(enabledOnClicked);
+            menuToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(menuOnClicked);
+            gameToggle.GetComponentInChildren<Toggle>().onValueChanged.AddListener(gameOnClicked);
         }
 
         public void SetData(Effect eff)
@@ -75,6 +93,7 @@ namespace Weather
             var menu = independentName + "Menu";
             bool showGame;
             bool showMenu;
+
             if (eff.IsEffectSeparateType())
             {
                 Plugin.Log.Info(independentName + " Is Independent Type");
