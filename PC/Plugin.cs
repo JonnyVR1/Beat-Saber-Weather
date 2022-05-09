@@ -4,6 +4,7 @@ using HarmonyLib;
 using IPA;
 using IPA.Config.Stores;
 using System.Reflection;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using IPALogger = IPA.Logging.Logger;
@@ -17,23 +18,42 @@ namespace Weather
         private static bool _hasEmptyTransitioned;
 
         internal static IPALogger Log { get; private set; }
+        internal static Harmony Harmony { get; private set; }
+        internal static IPA.Config.Config Config { get; private set; }
+        internal static MenuButton MenuButton { get; private set; }
         private static ForecastFlowCoordinator ForecastFlowCoordinator { get; set; }
-        internal const string Menu = "MenuViewControllers";
+        internal const string Menu = "MainMenu";
         internal const string Game = "GameCore";
 
         [Init]
         public Plugin(IPALogger logger, IPA.Config.Config config)
         {
-
             Log = logger;
+            Config = config;
             Log.Info("Initializing");
+            MenuButton = new MenuButton("Forecast", "See your Weather", LoadForCastUI);
+            Harmony = new Harmony("com.FutureMapper.Weather");
+        }
+
+        [UsedImplicitly]
+        [OnEnable]
+        public void OnEnable()
+        {
             SceneManager.activeSceneChanged += SceneChanged;
-            PluginConfig.Instance = config.Generated<PluginConfig>();
-            MenuButtons.instance.RegisterButton(new MenuButton("Forecast", "See your Weather", LoadForCastUI));
+            PluginConfig.Instance = Config.Generated<PluginConfig>();
+            MenuButtons.instance.RegisterButton(MenuButton);
             PluginConfig.Instance.AudioSfxVolume = Mathf.Clamp(PluginConfig.Instance.AudioSfxVolume, 0f, 1f);
             MiscConfig.Read();
-            var harmony = new Harmony("com.FutureMapper.Weather");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+
+        [UsedImplicitly]
+        [OnDisable]
+        public void OnDisable()
+        {
+            SceneManager.activeSceneChanged -= SceneChanged;
+            MenuButtons.instance.UnregisterButton(MenuButton);
+            Harmony.UnpatchSelf();
         }
 
         private void SceneChanged(Scene scene, Scene arg2)

@@ -30,6 +30,7 @@ namespace Weather
             if (value) currentEffect.SetSceneMaterials();
             if (!value) currentEffect.RemoveSceneMaterials();
         }
+
         private void GameToggleClicked(bool value)
         {
             Plugin.Log.Info("GameToggleClicked");
@@ -39,6 +40,7 @@ namespace Weather
             configObject.ShowInGame = value;
             MiscConfig.WriteToObject(configObject);
         }
+
         private void MenuToggleClicked(bool value)
         {
             Plugin.Log.Info("MenuToggleClicked");
@@ -91,6 +93,7 @@ namespace Weather
                 showGame = eff.Desc.worksInGame;
                 showMenu = eff.Desc.worksInMenu;
             }
+
             text.text = independentName;    
             enabledToggle.GetComponentInChildren<Toggle>().isOn = EffectModel.GetEffectEnabledByName(eff.Desc.effectName);
             var menuToggleComponent = menuToggle.GetComponentInChildren<Toggle>();
