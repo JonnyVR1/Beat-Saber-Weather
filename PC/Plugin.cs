@@ -1,10 +1,12 @@
-﻿using BeatSaberMarkupLanguage;
+﻿using System.Linq;
+using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.MenuButtons;
 using HarmonyLib;
 using IPA;
 using IPA.Config.Stores;
 using System.Reflection;
 using JetBrains.Annotations;
+using SiraUtil.Submissions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using IPALogger = IPA.Logging.Logger;
@@ -20,6 +22,7 @@ namespace Weather
         internal static IPA.Config.Config Config { get; private set; }
         internal static MenuButton MenuButton { get; private set; }
         private static ForecastFlowCoordinator ForecastFlowCoordinator { get; set; }
+        private static readonly Submission _submission;
         internal const string Menu = "MainMenu";
         internal const string Game = "GameCore";
 
@@ -91,6 +94,12 @@ namespace Weather
         {
             WeatherSceneInfo.CurrentScene = SceneManager.GetSceneByName(Game);
             BundleLoader.WeatherPrefab.GetComponent<WeatherSceneInfo>().SetActiveRefs();
+            
+            var playerData = Resources.FindObjectsOfTypeAll<PlayerDataModel>().FirstOrDefault();
+            if (playerData.playerData.gameplayModifiers.ghostNotes)
+            {
+                DisableScore(true, "Ghost notes are enabled");
+            }
         }
 
         private void LoadForCastUI()
@@ -101,6 +110,12 @@ namespace Weather
             }
 
             BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(ForecastFlowCoordinator);
+        }
+
+        private static void DisableScore(bool disable, string reason)
+        {
+            if (!disable) return;
+            _submission.DisableScoreSubmission("Weather", reason);
         }
     }
 }

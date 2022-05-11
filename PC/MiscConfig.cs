@@ -12,9 +12,9 @@ namespace Weather
 
         public MiscConfigObject(string name, bool showInMenu, bool showInGame)
         {
-            this.Name = name;
-            this.ShowInMenu = showInMenu;
-            this.ShowInGame = showInGame;
+            Name = name;
+            ShowInMenu = showInMenu;
+            ShowInGame = showInGame;
         }
     }
 
@@ -38,6 +38,7 @@ namespace Weather
             var parts = @object.Split('_');
             return new MiscConfigObject(parts[0], bool.Parse(parts[1]), bool.Parse(parts[2]));
         }
+
         public static void Write()
         {
             Plugin.Log.Info(Path);
@@ -47,6 +48,7 @@ namespace Weather
                 Plugin.Log.Info(serialized);
                 lines.Add(serialized);
             }
+
             File.WriteAllLines(Path, lines);
         }
 
@@ -57,7 +59,11 @@ namespace Weather
 
         public static void Read()
         {
-            if (!File.Exists(Path)) { File.WriteAllText(Path, ""); return; }
+            if (!File.Exists(Path))
+            {
+                File.WriteAllText(Path, ""); return;
+            }
+
             var lines = File.ReadAllLines(Path);
             Root.MiscConfigObjects.Clear();
             foreach (var line in lines)
@@ -75,9 +81,12 @@ namespace Weather
             {
                 var line = arrLine[i];
                 var parts = line.Split('_');
-                if(parts[0] == @object.Name)
+                if (parts[0] == @object.Name)
+                {
                     arrLine[i] = Serialize(@object);
+                }
             }
+
             File.WriteAllLines(Path, arrLine);
         }
 
@@ -89,6 +98,7 @@ namespace Weather
             {
                 @out = Deserialize(line);
             }
+
             return @out;
         }
 
@@ -100,6 +110,7 @@ namespace Weather
                 var parts = line.Split('_');
                 if (parts[0] == name) return true;
             }
+
             return false;
         }
     }
