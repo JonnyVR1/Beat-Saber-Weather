@@ -3,11 +3,12 @@
   "id": "Weather",
   "name": "Weather",
   "author": "FutureMapper",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "gameVersion": "1.22.0",
   "dependsOn": {
-    "BSIPA": "^4.2.2"
+    "BSIPA": "^4.2.2",
+    "SiraUtil": "^3.0.6"
   },
   "features": []
 }

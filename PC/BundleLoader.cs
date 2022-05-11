@@ -22,15 +22,14 @@ namespace Weather
             DefaultTex = Utils.LoadSpriteFromResources("Weather.DefaultCover.png");
         }
 
-        public static void LoadFromFileAsync(string path, Action<AsyncOperation, string> callback)
+        private static void LoadFromFileAsync(string path, Action<AsyncOperation, string> callback)
         {
-            if (File.Exists(path))
-            {
-                var bundleAsync = AssetBundle.LoadFromFileAsync(path);
-                bundleAsync.allowSceneActivation = true;
-                Action<AsyncOperation> action = async => { callback(async, path); };
-                bundleAsync.completed += action;
-            }
+            if (!File.Exists(path)) return;
+
+            var bundleAsync = AssetBundle.LoadFromFileAsync(path);
+            bundleAsync.allowSceneActivation = true;
+            Action<AsyncOperation> action = async => { callback(async, path); };
+            bundleAsync.completed += action;
         }
 
         public static void Load()
@@ -52,7 +51,7 @@ namespace Weather
             }
         }
 
-        public static void LoadFromBundle(AsyncOperation bundleRequest, string filePath)
+        private static void LoadFromBundle(AsyncOperation bundleRequest, string filePath)
         {
             var bundle = (bundleRequest as AssetBundleCreateRequest).assetBundle;
             var json = bundle.LoadAsset<TextAsset>("assets/effectJson.asset");
@@ -87,20 +86,20 @@ namespace Weather
 
            try
             {
-                efdTemp = JsonUtility.FromJson<TempDesc012>(json.text);
-            }
-            catch
-            {
-                try
+                if (json.text.Contains("WorksInGame"))
+                {
+                    efdTemp = JsonUtility.FromJson<TempDesc012>(json.text);
+                }
+                else
                 {
                     var efdOld1 = JsonUtility.FromJson<TempDesc011>(json.text);
                     efdTemp = new TempDesc012(efdOld1.Author, efdOld1.EffectName, efdOld1.WorksInMenu, true);
                 }
-                catch
-                {
-                    var fileName = Path.GetFileNameWithoutExtension(filePath);
-                    Plugin.Log.Error($"{fileName} Failed To Load! Json: {json.text}");
-                }
+            }
+            catch
+            {
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                Plugin.Log.Error($"{fileName} Failed To Load! Json: {json.text}");
             }
 
             var efd = eff.AddComponent<EffectDescriptor>();

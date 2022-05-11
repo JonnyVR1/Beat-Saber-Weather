@@ -90,7 +90,7 @@ namespace Weather
             BundleLoader.WeatherPrefab.GetComponent<WeatherSceneInfo>().SetActiveRefs();
         }
 
-        private void GameSceneActive()
+        private static void GameSceneActive()
         {
             WeatherSceneInfo.CurrentScene = SceneManager.GetSceneByName(Game);
             BundleLoader.WeatherPrefab.GetComponent<WeatherSceneInfo>().SetActiveRefs();
